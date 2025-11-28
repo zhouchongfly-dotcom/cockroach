@@ -640,6 +640,37 @@ class Game {
             }
         });
 
+        // 移动端触摸事件支持
+        this.canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // 防止默认行为（如页面滚动）
+            const touch = e.touches[0];
+            const rect = this.canvas.getBoundingClientRect();
+            this.slipperX = (touch.clientX - rect.left) * (this.canvas.width / rect.width);
+            this.slipperY = (touch.clientY - rect.top) * (this.canvas.height / rect.height);
+            this.slipperVisible = true;
+        }, { passive: false });
+
+        this.canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = this.canvas.getBoundingClientRect();
+            this.slipperX = (touch.clientX - rect.left) * (this.canvas.width / rect.width);
+            this.slipperY = (touch.clientY - rect.top) * (this.canvas.height / rect.height);
+            this.slipperVisible = true;
+        }, { passive: false });
+
+        this.canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            if (this.state === 'playing') {
+                // 使用最后记录的拖鞋位置来处理点击
+                this.handleTouch();
+            }
+        }, { passive: false });
+
+        this.canvas.addEventListener('touchcancel', () => {
+            this.slipperVisible = false;
+        });
+
         // 键盘事件
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.state === 'playing') {
@@ -842,6 +873,39 @@ class Game {
         const rect = this.canvas.getBoundingClientRect();
         const x = (e.clientX - rect.left) * (this.canvas.width / rect.width);
         const y = (e.clientY - rect.top) * (this.canvas.height / rect.height);
+
+        // 触发拖鞋拍打动画
+        this.slipperHitting = true;
+        this.slipperHitProgress = 0;
+
+        // 检查是否点击到蟑螂
+        let hit = false;
+        for (let i = this.cockroaches.length - 1; i >= 0; i--) {
+            const roach = this.cockroaches[i];
+            if (!roach.dying && roach.isClicked(x, y)) {
+                roach.kill();
+                this.score += CONFIG.game.pointsPerKill;
+                this.addCoins(CONFIG.game.coinsPerKill); // 获得金币
+                this.updateUI();
+                this.playSound('hit');
+
+                // 生成击杀特效粒子
+                this.createHitEffect(roach.x, roach.y);
+
+                hit = true;
+                break; // 只击杀一只
+            }
+        }
+
+        if (!hit) {
+            this.playSound('miss');
+        }
+    }
+
+    handleTouch() {
+        // 使用已保存的拖鞋位置（触摸事件中已更新）
+        const x = this.slipperX;
+        const y = this.slipperY;
 
         // 触发拖鞋拍打动画
         this.slipperHitting = true;
