@@ -266,17 +266,21 @@ body {
 
     /* 覆盖层移动端优化 */
     .overlay-content {
-        padding: 20px 15px;
+        padding: 15px 12px;
         width: 95%;
         max-width: 400px;
+        max-height: 85vh; /* 限制最大高度 */
+        overflow-y: auto; /* 允许滚动 */
     }
 
     .overlay-content h2 {
-        font-size: 1.8em;
+        font-size: 1.6em;
+        margin-bottom: 10px;
     }
 
     .overlay-content p {
-        font-size: 1em;
+        font-size: 0.95em;
+        margin-bottom: 12px;
     }
 
     /* 按钮移动端优化 */
@@ -298,16 +302,23 @@ body {
 
     /* 说明文字移动端 */
     .instructions {
-        padding: 15px;
-        font-size: 0.9em;
+        margin-top: 15px;
+        padding: 12px;
+        font-size: 0.85em;
+    }
+
+    .instructions h3 {
+        font-size: 1.1em;
+        margin-bottom: 8px;
     }
 
     .instructions ul {
-        line-height: 1.6;
+        line-height: 1.5;
+        padding-left: 20px;
     }
 
     .instructions li {
-        margin-bottom: 6px;
+        margin-bottom: 4px;
     }
 }
 
