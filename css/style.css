@@ -264,13 +264,20 @@ body {
         touch-action: none; /* 防止页面滚动 */
     }
 
-    /* 覆盖层移动端优化 */
+    /* 覆盖层移动端优化 - 修复上下裁切问题 */
+    .game-overlay {
+        align-items: flex-start; /* 改为顶部对齐 */
+        padding-top: 20px; /* 顶部留白 */
+        padding-bottom: 20px; /* 底部留白 */
+        overflow-y: auto; /* 允许整个覆盖层滚动 */
+    }
+
     .overlay-content {
         padding: 15px 12px;
         width: 95%;
         max-width: 400px;
-        max-height: 85vh; /* 限制最大高度 */
-        overflow-y: auto; /* 允许滚动 */
+        max-height: none; /* 移除高度限制，让内容自然撑开 */
+        margin: auto; /* 水平居中 */
     }
 
     .overlay-content h2 {
