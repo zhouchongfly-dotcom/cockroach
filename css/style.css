@@ -1,0 +1,671 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.game-container {
+    max-width: 900px;
+    width: 100%;
+}
+
+/* 头部样式 */
+.game-header {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px 15px 0 0;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.game-header h1 {
+    text-align: center;
+    color: #333;
+    font-size: 2em;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.game-stats {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.stat {
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 10px 20px;
+    border-radius: 10px;
+    color: white;
+    min-width: 100px;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.9em;
+    opacity: 0.9;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+/* Canvas 容器 */
+.canvas-wrapper {
+    position: relative;
+    background: #f5f5f5;
+    border-radius: 0 0 15px 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#gameCanvas {
+    display: block;
+    width: 100%;
+    cursor: none; /* 隐藏默认鼠标，用Canvas绘制拖鞋 */
+    /* 背景由JavaScript绘制厨房场景 */
+}
+
+/* 游戏覆盖层 */
+.game-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    backdrop-filter: blur(5px);
+}
+
+.game-overlay.hidden {
+    display: none;
+}
+
+.overlay-content {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.overlay-content h2 {
+    font-size: 2.5em;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.overlay-content p {
+    font-size: 1.2em;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* 按钮样式 */
+.btn-primary, .btn-secondary, .btn-control {
+    padding: 15px 40px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: bold;
+    margin: 5px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+.btn-control {
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    font-size: 1em;
+    padding: 10px 20px;
+}
+
+.btn-control:hover {
+    background: white;
+    transform: scale(1.05);
+}
+
+/* 游戏说明 */
+.instructions {
+    margin-top: 30px;
+    text-align: left;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.instructions h3 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+}
+
+.instructions ul {
+    list-style-position: inside;
+    color: #666;
+    line-height: 1.8;
+}
+
+.instructions li {
+    margin-bottom: 8px;
+}
+
+/* 最终统计 */
+.final-stats {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.final-stats p {
+    font-size: 1.3em;
+    margin: 10px 0;
+    color: #333;
+}
+
+.final-stats span {
+    color: #667eea;
+    font-weight: bold;
+}
+
+/* 游戏控制 */
+.game-controls {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .game-header h1 {
+        font-size: 1.5em;
+    }
+
+    .game-stats {
+        gap: 10px;
+    }
+
+    .stat {
+        min-width: 80px;
+        padding: 8px 15px;
+    }
+
+    .stat-value {
+        font-size: 1.2em;
+    }
+
+    .overlay-content {
+        padding: 30px 20px;
+    }
+
+    .overlay-content h2 {
+        font-size: 2em;
+    }
+
+    .btn-primary, .btn-secondary {
+        padding: 12px 30px;
+        font-size: 1em;
+    }
+}
+
+/* 动画效果 */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.shake {
+    animation: shake 0.3s;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.overlay-content {
+    animation: fadeIn 0.3s;
+}
+
+/* 商店样式 */
+.shop-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.shop-overlay.hidden {
+    display: none;
+}
+
+.shop-container {
+    background: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s;
+}
+
+.shop-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.shop-header h2 {
+    margin: 0;
+    font-size: 1.8em;
+}
+
+.shop-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2em;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.shop-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+}
+
+.shop-tabs {
+    display: flex;
+    background: #f5f5f5;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.shop-tab {
+    flex: 1;
+    padding: 15px 20px;
+    background: none;
+    border: none;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: #666;
+}
+
+.shop-tab.active {
+    background: white;
+    color: #667eea;
+    border-bottom: 3px solid #667eea;
+}
+
+.shop-tab:hover {
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.shop-content {
+    padding: 20px;
+    max-height: calc(90vh - 200px);
+    overflow-y: auto;
+}
+
+.shop-tab-content {
+    display: none;
+}
+
+.shop-tab-content.active {
+    display: block;
+}
+
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.shop-item {
+    background: #f9f9f9;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s;
+    cursor: pointer;
+    border: 3px solid transparent;
+}
+
+.shop-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.shop-item.owned {
+    border-color: #4caf50;
+    background: #e8f5e9;
+}
+
+.shop-item.equipped {
+    border-color: #667eea;
+    background: #e8eaf6;
+}
+
+.shop-item-preview {
+    width: 100%;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    background: white;
+    border-radius: 10px;
+    font-size: 3em;
+}
+
+.shop-item-preview.theme-preview {
+    padding: 0;
+    overflow: hidden;
+}
+
+.shop-item-name {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.shop-item-rarity {
+    font-size: 0.9em;
+    margin-bottom: 10px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    display: inline-block;
+}
+
+.rarity-common {
+    background: #e0e0e0;
+    color: #666;
+}
+
+.rarity-rare {
+    background: #bbdefb;
+    color: #1976d2;
+}
+
+.rarity-epic {
+    background: #ce93d8;
+    color: #7b1fa2;
+}
+
+.shop-item-price {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #ff9800;
+    margin: 10px 0;
+}
+
+.shop-item-btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 1em;
+}
+
+.btn-buy {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-buy:hover {
+    transform: scale(1.05);
+    box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+}
+
+.btn-buy:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-equip {
+    background: #4caf50;
+    color: white;
+}
+
+.btn-equip:hover {
+    background: #45a049;
+}
+
+.btn-equipped {
+    background: #9e9e9e;
+    color: white;
+    cursor: default;
+}
+
+/* 抽奖系统样式 */
+.gacha-section {
+    padding: 10px;
+}
+
+.gacha-banner {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.gacha-banner h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.8em;
+}
+
+.gacha-banner p {
+    margin: 10px 0;
+}
+
+.gacha-rates {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.rate-item {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.btn-gacha {
+    background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
+    color: white;
+    font-size: 1.5em;
+    font-weight: bold;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin: 15px 0;
+}
+
+.btn-gacha:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(243, 156, 18, 0.5);
+}
+
+.gacha-note {
+    font-size: 0.9em;
+    opacity: 0.9;
+    margin: 10px 0 0 0;
+}
+
+.collection-stats {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.collection-stats h4 {
+    margin: 0 0 15px 0;
+    color: #333;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 25px;
+    background: #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+
+.rarity-breakdown {
+    display: flex;
+    justify-content: space-around;
+    gap: 15px;
+    font-size: 0.95em;
+    color: #666;
+}
+
+.rarity-breakdown div {
+    background: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+}
+
+.shop-item.locked {
+    opacity: 0.6;
+    background: #f0f0f0;
+    border: 2px dashed #ccc;
+    cursor: not-allowed;
+}
+
+.shop-item.locked:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .shop-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+
+    .shop-item {
+        padding: 15px;
+    }
+
+    .shop-item-preview {
+        height: 80px;
+        font-size: 2.5em;
+    }
+
+    .gacha-banner {
+        padding: 20px;
+    }
+
+    .gacha-banner h3 {
+        font-size: 1.4em;
+    }
+
+    .btn-gacha {
+        font-size: 1.2em;
+        padding: 12px 30px;
+    }
+
+    .gacha-rates {
+        gap: 10px;
+    }
+
+    .rate-item {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+
+    .rarity-breakdown {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
